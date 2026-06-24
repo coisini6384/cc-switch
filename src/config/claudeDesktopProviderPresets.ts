@@ -77,6 +77,11 @@ const passthroughRoutes = (supports1m = false): ClaudeDesktopRoutePreset[] => [
     supports1m,
   },
   {
+    routeId: CLAUDE_DESKTOP_ROLE_ROUTE_IDS.fable,
+    upstreamModel: CLAUDE_DESKTOP_ROLE_ROUTE_IDS.fable,
+    supports1m,
+  },
+  {
     routeId: CLAUDE_DESKTOP_ROLE_ROUTE_IDS.haiku,
     upstreamModel: CLAUDE_DESKTOP_ROLE_ROUTE_IDS.haiku,
     supports1m,
@@ -88,23 +93,34 @@ const mappedRoutes = (
   opus: string,
   haiku: string,
   supports1m = false,
-): ClaudeDesktopRoutePreset[] => [
-  {
-    routeId: CLAUDE_DESKTOP_ROLE_ROUTE_IDS.sonnet,
-    upstreamModel: sonnet,
-    supports1m,
-  },
-  {
-    routeId: CLAUDE_DESKTOP_ROLE_ROUTE_IDS.opus,
-    upstreamModel: opus,
-    supports1m,
-  },
-  {
-    routeId: CLAUDE_DESKTOP_ROLE_ROUTE_IDS.haiku,
-    upstreamModel: haiku,
-    supports1m,
-  },
-];
+  fable?: string,
+): ClaudeDesktopRoutePreset[] => {
+  const routes: ClaudeDesktopRoutePreset[] = [
+    {
+      routeId: CLAUDE_DESKTOP_ROLE_ROUTE_IDS.sonnet,
+      upstreamModel: sonnet,
+      supports1m,
+    },
+    {
+      routeId: CLAUDE_DESKTOP_ROLE_ROUTE_IDS.opus,
+      upstreamModel: opus,
+      supports1m,
+    },
+    {
+      routeId: CLAUDE_DESKTOP_ROLE_ROUTE_IDS.haiku,
+      upstreamModel: haiku,
+      supports1m,
+    },
+  ];
+  if (fable) {
+    routes.push({
+      routeId: CLAUDE_DESKTOP_ROLE_ROUTE_IDS.fable,
+      upstreamModel: fable,
+      supports1m,
+    });
+  }
+  return routes;
+};
 
 /**
  * 非 Claude 上游模型用此工厂：route ID 使用 Claude Desktop 能通过校验的
@@ -115,13 +131,18 @@ const brandedRoutes = (
   opus: string,
   haiku: string,
   supports1m = false,
+  fable?: string,
 ): ClaudeDesktopRoutePreset[] => {
   const seenUpstream = new Set<string>();
-  return [
+  const entries: { routeId: string; upstreamModel: string }[] = [
     { routeId: CLAUDE_DESKTOP_ROLE_ROUTE_IDS.sonnet, upstreamModel: sonnet },
     { routeId: CLAUDE_DESKTOP_ROLE_ROUTE_IDS.opus, upstreamModel: opus },
     { routeId: CLAUDE_DESKTOP_ROLE_ROUTE_IDS.haiku, upstreamModel: haiku },
-  ]
+  ];
+  if (fable) {
+    entries.push({ routeId: CLAUDE_DESKTOP_ROLE_ROUTE_IDS.fable, upstreamModel: fable });
+  }
+  return entries
     .map(({ routeId, upstreamModel }) => ({
       routeId,
       upstreamModel,
